@@ -2,102 +2,100 @@
 namespace auto;
 
 class Psr4AutoLoader {
-  /**
-   * 命名空间前缀和具体路径对应的映射表(这在composer中有相同的东西)
-   * 一个命名空间前缀中可以有多个路径
-   */
-   protected $prefixes = array();
+    /**
+     * 命名空间前缀和具体路径对应的映射表(这在composer中有相同的东西)
+     * 一个命名空间前缀中可以有多个路径
+     */
+    protected $prefixes = array();
 
-   /**
-    * 注册加载函数到自动加载函数栈中
-    *
-    * @return void
-    */
-   public function register() {
-       spl_autoload_register(array($this, 'loadClass'));
-   }
-
-   /**
- * 给一个命名空间前缀中添加具体的路径.
- *
- * @param string $prefix 命名空间前缀
- * @param string $base_dir 要添加到命名空间中的路径
- * @param bool $prepend 如果为true，则将该路径添加到命名空间对应数组的
- *             最前面，否则,添加到最后面.(这个会影响自动加载的搜索文件)
- *
- * @return void
- */
-public function addNamespace($prefix, $base_dir, $prepend = false)
-{
-    // 正规化命名空间前缀
-    $prefix = trim($prefix, '\\') . '\\';
-
-    // 正规化命名空间对应的目录
-    $base_dir = rtrim($base_dir, DIRECTORY_SEPARATOR) . '/';
-
-    // 初始化命名空间中该前缀的数组
-    if (isset($this->prefixes[$prefix]) === false) {
-        $this->prefixes[$prefix] = array();
+    /**
+     * 注册加载函数到自动加载函数栈中
+     *
+     * @return void
+     */
+    public function register() {
+        spl_autoload_register(array($this,
+            'loadClass'));
     }
 
-    // 将目录添加到命名空间数组中$prefix前缀数组中
-    if ($prepend) {
-        array_unshift($this->prefixes[$prefix], $base_dir);
-    } else {
-        array_push($this->prefixes[$prefix], $base_dir);
-    }
-}
+    /**
+     * 给一个命名空间前缀中添加具体的路径.
+     *
+     * @param string $prefix 命名空间前缀
+     * @param string $base_dir 要添加到命名空间中的路径
+     * @param bool $prepend 如果为true，则将该路径添加到命名空间对应数组的
+     *             最前面，否则,添加到最后面.(这个会影响自动加载的搜索文件)
+     *
+     * @return void
+     */
+    public function addNamespace($prefix, $base_dir, $prepend = false) {
+        // 正规化命名空间前缀
+        $prefix = trim($prefix, '\\') . '\\';
 
-/**
- * 如果文件存在，从文件系统中加载他到运行环境中.
- *
- * @param string $file 要加在的文件.
- * @return bool 文件存在返回true，否在返回false.
- */
-protected function requireFile($file)
-{
-    if (file_exists($file)) {
-        require $file;
-        return true;
-    }
-    return false;
-}
+        // 正规化命名空间对应的目录
+        $base_dir = rtrim($base_dir, DIRECTORY_SEPARATOR) . '/';
 
-/**
- * 加载命名空间前缀和relative class(相对类)映射的文件.
- *
- * @param string $prefix 命名空间前缀.
- * @param string $relative_class relative class名称.
- * @return mixed 成功返回映射的文件路径，失败返回false.
- */
-protected function loadMappedFile($prefix, $relative_class)
-{
-    // 命名空间前缀数组中不存在prefix命名空间前缀，返回false.
-    if (isset($this->prefixes[$prefix]) === false) {
-        return false;
-    }
+        // 初始化命名空间中该前缀的数组
+        if (isset($this->prefixes[$prefix]) === false) {
+            $this->prefixes[$prefix] = array();
+        }
 
-    // look through base directories for this namespace prefix
-    // 遍历命名空间前缀对应的目录数组，知道找到映射的文件
-    foreach ($this->prefixes[$prefix] as $base_dir) {
-
-        // 用具体路径替换掉命名空间前缀,
-        // 替换relative class中的命名空间分隔符为目录分隔符
-        // 添加.php后缀
-        $file = $base_dir
-              . str_replace('\\', DIRECTORY_SEPARATOR, $relative_class)
-              . '.php';
-
-        // 如果映射文件存在加载对应的文件
-        if ($this->requireFile($file)) {
-        // 返回成功加载的文件路径
-            return $file;
+        // 将目录添加到命名空间数组中$prefix前缀数组中
+        if ($prepend) {
+            array_unshift($this->prefixes[$prefix], $base_dir);
+        } else {
+            array_push($this->prefixes[$prefix], $base_dir);
         }
     }
 
-    // 未找到要映射的文件返回false
-    return false;
-}
+    /**
+     * 如果文件存在，从文件系统中加载他到运行环境中.
+     *
+     * @param string $file 要加在的文件.
+     * @return bool 文件存在返回true，否在返回false.
+     */
+    protected function requireFile($file) {
+        if (file_exists($file)) {
+            require $file;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 加载命名空间前缀和relative class(相对类)映射的文件.
+     *
+     * @param string $prefix 命名空间前缀.
+     * @param string $relative_class relative class名称.
+     * @return mixed 成功返回映射的文件路径，失败返回false.
+     */
+    protected function loadMappedFile($prefix, $relative_class) {
+        // 命名空间前缀数组中不存在prefix命名空间前缀，返回false.
+        if (isset($this->prefixes[$prefix]) === false) {
+            return false;
+        }
+
+        // look through base directories for this namespace prefix
+        // 遍历命名空间前缀对应的目录数组，知道找到映射的文件
+        foreach ($this->prefixes[$prefix] as $base_dir) {
+
+            // 用具体路径替换掉命名空间前缀,
+            // 替换relative class中的命名空间分隔符为目录分隔符
+            // 添加.php后缀
+            $file = $base_dir
+                . str_replace('\\', DIRECTORY_SEPARATOR, $relative_class)
+                . '.php';
+
+            // 如果映射文件存在加载对应的文件
+            if ($this->requireFile($file)) {
+                // 返回成功加载的文件路径
+                return $file;
+            }
+        }
+
+        // 未找到要映射的文件返回false
+        return false;
+    }
 
     /**
      * 加载给定类的对应的类库文件
@@ -105,8 +103,7 @@ protected function loadMappedFile($prefix, $relative_class)
      * @param string $class 完整的类库名称.
      * @return mixed 成功时返回类名对应的类库文件路径，失败时返回false.
      */
-    public function loadClass($class)
-    {
+    public function loadClass($class) {
         // 当前的命名空间前缀
         $prefix = $class;
 
