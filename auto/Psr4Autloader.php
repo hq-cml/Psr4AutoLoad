@@ -63,4 +63,40 @@ protected function requireFile($file)
     return false;
 }
 
+/**
+ * 加载命名空间前缀和relative class(相对类)映射的文件.
+ *
+ * @param string $prefix 命名空间前缀.
+ * @param string $relative_class relative class名称.
+ * @return mixed 成功返回映射的文件路径，失败返回false.
+ */
+protected function loadMappedFile($prefix, $relative_class)
+{
+    // 命名空间前缀数组中不存在prefix命名空间前缀，返回false.
+    if (isset($this->prefixes[$prefix]) === false) {
+        return false;
+    }
+
+    // look through base directories for this namespace prefix
+    // 遍历命名空间前缀对应的目录数组，知道找到映射的文件
+    foreach ($this->prefixes[$prefix] as $base_dir) {
+
+        // 用具体路径替换掉命名空间前缀,
+        // 替换relative class中的命名空间分隔符为目录分隔符
+        // 添加.php后缀
+        $file = $base_dir
+              . str_replace('\\', DIRECTORY_SEPARATOR, $relative_class)
+              . '.php';
+
+        // 如果映射文件存在加载对应的文件
+        if ($this->requireFile($file)) {
+        // 返回成功加载的文件路径
+            return $file;
+        }
+    }
+
+    // 未找到要映射的文件返回false
+    return false;
+}
+
 }
