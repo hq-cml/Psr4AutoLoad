@@ -11,7 +11,7 @@ class App{
     private static function init(){
         self::$apppath = realpath(dirname("./"));
         $base_dir = self::$apppath.DIRECTORY_SEPARATOR."vendor".DIRECTORY_SEPARATOR;
-        include_once("./auto/Psr4AutoLoader.php");
+        include_once("auto/Psr4AutoLoader.php");
         $Autoload = new auto\Psr4AutoLoader();
         $Autoload->addNamespace("vendor", $base_dir);
         $Autoload->register();
