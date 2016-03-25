@@ -5,14 +5,13 @@
  * Date: 16/3/25
  * Time: 下午6:26
  */
-include_once("./auto/Psr4AutoLoader.php");
 
 class App{
     protected static $apppath = null;
     private static function init(){
         self::$apppath = realpath(dirname("./"));
         $base_dir = self::$apppath.DIRECTORY_SEPARATOR."vendor".DIRECTORY_SEPARATOR;
-
+        include_once("./auto/Psr4AutoLoader.php");
         $Autoload = new auto\Psr4AutoLoader();
         $Autoload->addNamespace("vendor", $base_dir);
         $Autoload->register();
