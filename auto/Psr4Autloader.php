@@ -48,6 +48,19 @@ public function addNamespace($prefix, $base_dir, $prepend = false)
     }
 }
 
-
+/**
+ * 如果文件存在，从文件系统中加载他到运行环境中.
+ *
+ * @param string $file 要加在的文件.
+ * @return bool 文件存在返回true，否在返回false.
+ */
+protected function requireFile($file)
+{
+    if (file_exists($file)) {
+        require $file;
+        return true;
+    }
+    return false;
+}
 
 }
