@@ -99,4 +99,37 @@ protected function loadMappedFile($prefix, $relative_class)
     return false;
 }
 
+    /**
+     * 加载给定类的对应的类库文件
+     *
+     * @param string $class 完整的类库名称.
+     * @return mixed 成功时返回类名对应的类库文件路径，失败时返回false.
+     */
+    public function loadClass($class)
+    {
+        // 当前的命名空间前缀
+        $prefix = $class;
+
+        //通过命名空间去查找对应的文件,注意此处是strrpos,从右侧开始扫描~
+        while (false !== $pos = strrpos($prefix, '\\')) {
+
+            // 可能存在的命名空间前缀
+            $prefix = substr($class, 0, $pos + 1);
+
+            // 剩余部分是可能存在的类
+            $relative_class = substr($class, $pos + 1);
+
+            //试图加载prefix前缀和relitive class对应的文件
+            $mapped_file = $this->loadMappedFile($prefix, $relative_class);
+            if ($mapped_file) {
+                return $mapped_file;
+            }
+
+            // 移动命名空间和relative class分割位置到下一个位置
+            $prefix = rtrim($prefix, '\\');
+        }
+
+        // 未找到试图加载的文件
+        return false;
+    }
 }
