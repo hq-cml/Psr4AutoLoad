@@ -13,14 +13,16 @@ class App{
         $base_dir = self::$apppath.DIRECTORY_SEPARATOR."vendor".DIRECTORY_SEPARATOR;
         include_once("auto/Psr4AutoLoader.php");
         $Autoload = new auto\Psr4AutoLoader();
+
+        //设置命名空间前缀到base目录的映射:vendor=>base_dir
         $Autoload->addNamespace("vendor", $base_dir);
         $Autoload->register();
     }
 
     public static function run(){
         self::init();
-        $c = new vendor\vendor1\MyClass1();
-        new vendor\vendor2\MyClass2();
+        $c = new \vendor\vendor1\MyClass1();
+        new \vendor\vendor2\MyClass2();
 
         $c->hello();
     }
